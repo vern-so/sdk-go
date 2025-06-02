@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stainless-sdks/vern-sdk-go/packages/param"
+	"github.com/vern-so/sdk-go/packages/param"
 )
 
 type Struct struct {

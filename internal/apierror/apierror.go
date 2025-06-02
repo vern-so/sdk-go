@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"net/http/httputil"
 
-	"github.com/stainless-sdks/vern-sdk-go/internal/apijson"
-	"github.com/stainless-sdks/vern-sdk-go/packages/respjson"
+	"github.com/vern-so/sdk-go/internal/apijson"
+	"github.com/vern-so/sdk-go/packages/respjson"
 )
 
 // Error represents an error that originates from the API, i.e. when a request is

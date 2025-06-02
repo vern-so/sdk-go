@@ -1,7 +1,7 @@
 package sentinel
 
 import (
-	"github.com/stainless-sdks/vern-sdk-go/internal/encoding/json/shims"
+	"github.com/vern-so/sdk-go/internal/encoding/json/shims"
 	"reflect"
 	"sync"
 )

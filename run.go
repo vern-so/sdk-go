@@ -9,11 +9,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/stainless-sdks/vern-sdk-go/internal/apijson"
-	"github.com/stainless-sdks/vern-sdk-go/internal/requestconfig"
-	"github.com/stainless-sdks/vern-sdk-go/option"
-	"github.com/stainless-sdks/vern-sdk-go/packages/param"
-	"github.com/stainless-sdks/vern-sdk-go/packages/respjson"
+	"github.com/vern-so/sdk-go/internal/apijson"
+	"github.com/vern-so/sdk-go/internal/requestconfig"
+	"github.com/vern-so/sdk-go/option"
+	"github.com/vern-so/sdk-go/packages/param"
+	"github.com/vern-so/sdk-go/packages/respjson"
 )
 
 // RunService contains methods and other services that help with interacting with

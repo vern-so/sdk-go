@@ -1,7 +1,7 @@
 package paramutil
 
 import (
-	"github.com/stainless-sdks/vern-sdk-go/internal/encoding/json/sentinel"
+	"github.com/vern-so/sdk-go/internal/encoding/json/sentinel"
 )
 
 // NullPtr returns a pointer to the zero value of the type T.
