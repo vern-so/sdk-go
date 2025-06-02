@@ -1,7 +1,7 @@
 package vernsdk
 
 import (
-	"github.com/stainless-sdks/vern-sdk-go/packages/param"
+	"github.com/vern-so/sdk-go/packages/param"
 	"io"
 	"time"
 )

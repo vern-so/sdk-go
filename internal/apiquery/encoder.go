@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/stainless-sdks/vern-sdk-go/packages/param"
+	"github.com/vern-so/sdk-go/packages/param"
 )
 
 var encoders sync.Map // map[reflect.Type]encoderFunc

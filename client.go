@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/stainless-sdks/vern-sdk-go/internal/requestconfig"
-	"github.com/stainless-sdks/vern-sdk-go/option"
+	"github.com/vern-so/sdk-go/internal/requestconfig"
+	"github.com/vern-so/sdk-go/option"
 )
 
 // Client creates a struct with services and top level methods that help with

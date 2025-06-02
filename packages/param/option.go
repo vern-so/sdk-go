@@ -3,7 +3,7 @@ package param
 import (
 	"encoding/json"
 	"fmt"
-	shimjson "github.com/stainless-sdks/vern-sdk-go/internal/encoding/json"
+	shimjson "github.com/vern-so/sdk-go/internal/encoding/json"
 	"time"
 )
 

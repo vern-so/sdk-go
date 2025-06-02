@@ -7,7 +7,7 @@ package apijson
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/stainless-sdks/vern-sdk-go/packages/param"
+	"github.com/vern-so/sdk-go/packages/param"
 	"reflect"
 	"strconv"
 	"sync"

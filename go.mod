@@ -1,4 +1,4 @@
-module github.com/stainless-sdks/vern-sdk-go
+module github.com/vern-so/sdk-go
 
 go 1.21
 
