@@ -1,7 +1,7 @@
 package apijson
 
 import (
-	"github.com/stainless-sdks/vern-sdk-go/packages/respjson"
+	"github.com/vern-so/sdk-go/packages/respjson"
 	"reflect"
 )
 

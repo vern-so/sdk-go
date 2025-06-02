@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"time"
 
-	shimjson "github.com/stainless-sdks/vern-sdk-go/internal/encoding/json"
+	shimjson "github.com/vern-so/sdk-go/internal/encoding/json"
 
 	"github.com/tidwall/sjson"
 )

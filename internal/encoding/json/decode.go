@@ -14,7 +14,7 @@ import (
 	"encoding"
 	"encoding/base64"
 	"fmt"
-	"github.com/stainless-sdks/vern-sdk-go/internal/encoding/json/shims"
+	"github.com/vern-so/sdk-go/internal/encoding/json/shims"
 	"reflect"
 	"strconv"
 	"strings"

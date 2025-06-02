@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stainless-sdks/vern-sdk-go"
-	"github.com/stainless-sdks/vern-sdk-go/internal"
-	"github.com/stainless-sdks/vern-sdk-go/option"
+	"github.com/vern-so/sdk-go"
+	"github.com/vern-so/sdk-go/internal"
+	"github.com/vern-so/sdk-go/option"
 )
 
 type closureTransport struct {

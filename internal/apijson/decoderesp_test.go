@@ -2,8 +2,8 @@ package apijson_test
 
 import (
 	"encoding/json"
-	"github.com/stainless-sdks/vern-sdk-go/internal/apijson"
-	"github.com/stainless-sdks/vern-sdk-go/packages/respjson"
+	"github.com/vern-so/sdk-go/internal/apijson"
+	"github.com/vern-so/sdk-go/packages/respjson"
 	"testing"
 )
 
