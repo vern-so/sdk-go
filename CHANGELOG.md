@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-alpha.1 (2025-06-04)
+
+Full Changelog: [v0.0.1-alpha.1...v0.1.0-alpha.1](https://github.com/vern-so/sdk-go/compare/v0.0.1-alpha.1...v0.1.0-alpha.1)
+
+### Features
+
+* **client:** allow overriding unions ([8636f62](https://github.com/vern-so/sdk-go/commit/8636f625932b1e6707ee92750dcc0f655374ef11))
+
 ## 0.0.1-alpha.1 (2025-06-02)
 
 Full Changelog: [v0.0.1-alpha.0...v0.0.1-alpha.1](https://github.com/vern-so/sdk-go/compare/v0.0.1-alpha.0...v0.0.1-alpha.1)
