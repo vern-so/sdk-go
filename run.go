@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/vern-so/sdk-go/internal/apijson"
@@ -37,7 +38,7 @@ func NewRunService(opts ...option.RequestOption) (r RunService) {
 
 // Executes a task with the provided inputs
 func (r *RunService) New(ctx context.Context, body RunNewParams, opts ...option.RequestOption) (res *RunNewResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "runs"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -45,7 +46,7 @@ func (r *RunService) New(ctx context.Context, body RunNewParams, opts ...option.
 
 // Retrieves the details of a specific task run
 func (r *RunService) Get(ctx context.Context, id string, opts ...option.RequestOption) (res *RunGetResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if id == "" {
 		err = errors.New("missing required id parameter")
 		return
