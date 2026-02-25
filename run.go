@@ -131,7 +131,7 @@ const (
 
 type RunNewParams struct {
 	// The ID of the task to execute
-	TaskID string `json:"taskId,required"`
+	TaskID string `json:"taskId" api:"required"`
 	// Optional user-specified UID for a profile linked via magic link
 	ProfileID param.Opt[string] `json:"profileId,omitzero"`
 	// An optional URL to be processed by the task
