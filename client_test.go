@@ -38,7 +38,7 @@ func TestUserAgentHeader(t *testing.T) {
 			},
 		}),
 	)
-	client.Runs.New(context.Background(), vernsdk.RunNewParams{
+	_, _ = client.Runs.New(context.Background(), vernsdk.RunNewParams{
 		TaskID: "task_123456",
 	})
 	if userAgent != fmt.Sprintf("Vern/Go %s", internal.PackageVersion) {

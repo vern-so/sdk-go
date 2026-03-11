@@ -41,7 +41,7 @@ func (r *RunService) New(ctx context.Context, body RunNewParams, opts ...option.
 	opts = slices.Concat(r.Options, opts)
 	path := "runs"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Retrieves the details of a specific task run
@@ -49,11 +49,11 @@ func (r *RunService) Get(ctx context.Context, id string, opts ...option.RequestO
 	opts = slices.Concat(r.Options, opts)
 	if id == "" {
 		err = errors.New("missing required id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("runs/%s", id)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 type RunNewResponse struct {
