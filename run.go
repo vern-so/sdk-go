@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/vern-so/sdk-go/internal/apijson"
@@ -37,22 +38,22 @@ func NewRunService(opts ...option.RequestOption) (r RunService) {
 
 // Executes a task with the provided inputs
 func (r *RunService) New(ctx context.Context, body RunNewParams, opts ...option.RequestOption) (res *RunNewResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "runs"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Retrieves the details of a specific task run
 func (r *RunService) Get(ctx context.Context, id string, opts ...option.RequestOption) (res *RunGetResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if id == "" {
 		err = errors.New("missing required id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("runs/%s", id)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 type RunNewResponse struct {
@@ -130,7 +131,7 @@ const (
 
 type RunNewParams struct {
 	// The ID of the task to execute
-	TaskID string `json:"taskId,required"`
+	TaskID string `json:"taskId" api:"required"`
 	// Optional user-specified UID for a profile linked via magic link
 	ProfileID param.Opt[string] `json:"profileId,omitzero"`
 	// An optional URL to be processed by the task

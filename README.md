@@ -1,6 +1,10 @@
 # Vern Go API Library
 
+<!-- x-release-please-start-version -->
+
 <a href="https://pkg.go.dev/github.com/vern-so/sdk-go"><img src="https://pkg.go.dev/badge/github.com/vern-so/sdk-go.svg" alt="Go Reference"></a>
+
+<!-- x-release-please-end -->
 
 The Vern Go library provides convenient access to the Vern REST API
 from applications written in Go.
@@ -24,14 +28,14 @@ Or to pin the version:
 <!-- x-release-please-start-version -->
 
 ```sh
-go get -u 'github.com/vern-so/sdk-go@v0.0.1-alpha.1'
+go get -u 'github.com/vern-so/sdk-go@v0.1.0-alpha.1'
 ```
 
 <!-- x-release-please-end -->
 
 ## Requirements
 
-This library requires Go 1.18+.
+This library requires Go 1.22+.
 
 ## Usage
 
@@ -68,7 +72,7 @@ func main() {
 The vernsdk library uses the [`omitzero`](https://tip.golang.org/doc/go1.24#encodingjsonpkgencodingjson)
 semantics from the Go 1.24+ `encoding/json` release for request fields.
 
-Required primitive fields (`int64`, `string`, etc.) feature the tag <code>\`json:"...,required"\`</code>. These
+Required primitive fields (`int64`, `string`, etc.) feature the tag <code>\`api:"required"\`</code>. These
 fields are always serialized, even their zero values.
 
 Optional primitive types are wrapped in a `param.Opt[T]`. These fields can be set with the provided constructors, `vernsdk.String(string)`, `vernsdk.Int(int64)`, etc.
@@ -123,7 +127,7 @@ custom := param.Override[vernsdk.FooParams](12)
 
 ### Request unions
 
-Unions are represented as a struct with fields prefixed by "Of" for each of it's variants,
+Unions are represented as a struct with fields prefixed by "Of" for each of its variants,
 only one field can be non-zero. The non-zero field will be serialized.
 
 Sub-properties of the union can be accessed via methods on the union struct.
@@ -271,6 +275,8 @@ client.Runs.New(context.TODO(), ...,
 	option.WithJSONSet("some.json.path", map[string]string{"my": "object"}),
 )
 ```
+
+The request option `option.WithDebugLog(nil)` may be helpful while debugging.
 
 See the [full list of request options](https://pkg.go.dev/github.com/vern-so/sdk-go/option).
 

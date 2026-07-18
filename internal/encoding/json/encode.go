@@ -173,11 +173,21 @@ import (
 // JSON cannot represent cyclic data structures and Marshal does not
 // handle them. Passing cyclic structures to Marshal will result in
 // an error.
-func Marshal(v any) ([]byte, error) {
+// EDIT(begin): add optimization options
+func Marshal(v any, opts ...Option) ([]byte, error) {
+	// EDIT(end): add optimization options
 	e := newEncodeState()
 	defer encodeStatePool.Put(e)
 
-	err := e.marshal(v, encOpts{escapeHTML: true})
+	// EDIT(begin): don't escape HTML by default, and apply options
+	encOpts := encOpts{escapeHTML: shims.EscapeHTMLByDefault}
+	if opts != nil {
+		encOpts = encOpts.apply(opts...)
+	}
+	err := e.marshal(v, encOpts)
+	// ORIGINAL:
+	//  err := e.marshal(v, encOpts{escapeHTML: true})
+	// EDIT(end)
 	if err != nil {
 		return nil, err
 	}
@@ -348,6 +358,9 @@ type encOpts struct {
 	// EDIT(begin): save the timefmt
 	timefmt string
 	// EDIT(end)
+	// EDIT(begin): add optimization to skip compaction
+	skipCompaction bool
+	// EDIT(end)
 }
 
 type encoderFunc func(e *encodeState, v reflect.Value, opts encOpts)
@@ -479,7 +492,7 @@ func marshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 	if err == nil {
 		e.Grow(len(b))
 		out := e.AvailableBuffer()
-		out, err = appendCompact(out, b, opts.escapeHTML)
+		out, err = appendCompact(out, b, opts)
 		e.Buffer.Write(out)
 	}
 	if err != nil {
@@ -505,7 +518,7 @@ func addrMarshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 	if err == nil {
 		e.Grow(len(b))
 		out := e.AvailableBuffer()
-		out, err = appendCompact(out, b, opts.escapeHTML)
+		out, err = appendCompact(out, b, opts)
 		e.Buffer.Write(out)
 	}
 	if err != nil {
@@ -776,7 +789,7 @@ type mapEncoder struct {
 }
 
 func (me mapEncoder) encode(e *encodeState, v reflect.Value, opts encOpts) {
-	if v.IsNil() {
+	if v.IsNil() /* EDIT(begin) */ || sentinel.IsValueNull(v) /* EDIT(end) */ {
 		e.WriteString("null")
 		return
 	}
@@ -855,7 +868,7 @@ type sliceEncoder struct {
 }
 
 func (se sliceEncoder) encode(e *encodeState, v reflect.Value, opts encOpts) {
-	if v.IsNil() {
+	if v.IsNil() /* EDIT(begin) */ || sentinel.IsValueNull(v) /* EDIT(end) */ {
 		e.WriteString("null")
 		return
 	}
@@ -916,14 +929,7 @@ type ptrEncoder struct {
 }
 
 func (pe ptrEncoder) encode(e *encodeState, v reflect.Value, opts encOpts) {
-	// EDIT(begin)
-	//
-	// if v.IsNil()  {
-	// 	e.WriteString("null")
-	// 	return
-	// }
-
-	if v.IsNil() || sentinel.IsValueNullPtr(v) || sentinel.IsValueNullSlice(v) {
+	if v.IsNil() {
 		e.WriteString("null")
 		return
 	}

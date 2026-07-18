@@ -2,6 +2,7 @@ package param
 
 import (
 	"encoding/json"
+	"github.com/vern-so/sdk-go/internal/encoding/json/sentinel"
 	"reflect"
 )
 
@@ -40,6 +41,19 @@ func Override[T ParamStruct, PtrT InferPtr[T]](v any) T {
 	return *pt
 }
 
+// SetJSON configures a param struct to serialize with the provided raw JSON data.
+// Use this when you have existing JSON that you want to send as request parameters.
+//
+//	var req example.NewUserParams
+//	var rawJSON = []byte(`{"name": "...", "age": 40}`)
+//	param.SetJSON(rawJSON, &req)
+//	res, err := client.Users.New(ctx, req)
+//
+// Note: The struct's existing fields will be ignored; only the provided JSON is serialized.
+func SetJSON(rawJSON []byte, ptr anyParamStruct) {
+	ptr.setMetadata(json.RawMessage(rawJSON))
+}
+
 // IsOmitted returns true if v is the zero value of its type.
 //
 // If IsOmitted is true, and the field uses a `json:"...,omitzero"` tag,
@@ -58,12 +72,21 @@ func IsOmitted(v any) bool {
 
 // IsNull returns true if v was set to the JSON value null.
 //
-// To set a param to null use [NullStruct] or [Null]
+// To set a param to null use [NullStruct], [Null], [NullMap], or [NullSlice]
 // depending on the type of v.
 //
 // IsNull returns false if the value is omitted.
-func IsNull(v ParamNullable) bool {
-	return v.null()
+func IsNull[T any](v T) bool {
+	if nullable, ok := any(v).(ParamNullable); ok {
+		return nullable.null()
+	}
+
+	switch reflect.TypeOf(v).Kind() {
+	case reflect.Slice, reflect.Map:
+		return sentinel.IsNull(v)
+	}
+
+	return false
 }
 
 // ParamNullable encapsulates all structs in parameters,
@@ -79,6 +102,11 @@ type ParamStruct interface {
 	Overrides() (any, bool)
 	null() bool
 	extraFields() map[string]any
+}
+
+// A pointer to ParamStruct
+type anyParamStruct interface {
+	setMetadata(any)
 }
 
 // This is an implementation detail and should never be explicitly set.

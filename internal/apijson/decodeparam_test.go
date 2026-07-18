@@ -50,10 +50,10 @@ func TestOptionalDecoders(t *testing.T) {
 type paramObject = param.APIObject
 
 type BasicObject struct {
-	ReqInt    int64   `json:"req_int,required"`
-	ReqFloat  float64 `json:"req_float,required"`
-	ReqString string  `json:"req_string,required"`
-	ReqBool   bool    `json:"req_bool,required"`
+	ReqInt    int64   `json:"req_int" api:"required"`
+	ReqFloat  float64 `json:"req_float" api:"required"`
+	ReqString string  `json:"req_string" api:"required"`
+	ReqBool   bool    `json:"req_bool" api:"required"`
 
 	OptInt    param.Opt[int64]   `json:"opt_int"`
 	OptFloat  param.Opt[float64] `json:"opt_float"`
@@ -110,7 +110,7 @@ func TestBasicObject(t *testing.T) {
 }
 
 type ComplexObject struct {
-	Basic BasicObject `json:"basic,required"`
+	Basic BasicObject `json:"basic" api:"required"`
 	Enum  string      `json:"enum"`
 	paramObject
 }
@@ -152,29 +152,29 @@ func TestComplexObject(t *testing.T) {
 type paramUnion = param.APIUnion
 
 type MemberA struct {
-	Name string `json:"name,required"`
-	Age  int    `json:"age,required"`
+	Name string `json:"name" api:"required"`
+	Age  int    `json:"age" api:"required"`
 }
 
 type MemberB struct {
-	Name string `json:"name,required"`
-	Age  string `json:"age,required"`
+	Name string `json:"name" api:"required"`
+	Age  string `json:"age" api:"required"`
 }
 
 type MemberC struct {
-	Name   string `json:"name,required"`
-	Age    int    `json:"age,required"`
+	Name   string `json:"name" api:"required"`
+	Age    int    `json:"age" api:"required"`
 	Status string `json:"status"`
 }
 
 type MemberD struct {
-	Cost   int    `json:"cost,required"`
-	Status string `json:"status,required"`
+	Cost   int    `json:"cost" api:"required"`
+	Status string `json:"status" api:"required"`
 }
 
 type MemberE struct {
-	Cost   int    `json:"cost,required"`
-	Status string `json:"status,required"`
+	Cost   int    `json:"cost" api:"required"`
+	Status string `json:"status" api:"required"`
 }
 
 type MemberF struct {
@@ -318,21 +318,21 @@ func (c ConstantB) Default() string { return "B" }
 func (c ConstantC) Default() string { return "C" }
 
 type DiscVariantA struct {
-	Name string    `json:"name,required"`
-	Age  int       `json:"age,required"`
-	Type ConstantA `json:"type,required"`
+	Name string    `json:"name" api:"required"`
+	Age  int       `json:"age" api:"required"`
+	Type ConstantA `json:"type" api:"required"`
 }
 
 type DiscVariantB struct {
-	Name string    `json:"name,required"`
-	Age  int       `json:"age,required"`
-	Type ConstantB `json:"type,required"`
+	Name string    `json:"name" api:"required"`
+	Age  int       `json:"age" api:"required"`
+	Type ConstantB `json:"type" api:"required"`
 }
 
 type DiscVariantC struct {
-	Name string    `json:"name,required"`
-	Age  float64   `json:"age,required"`
-	Type ConstantC `json:"type,required"`
+	Name string    `json:"name" api:"required"`
+	Age  float64   `json:"age" api:"required"`
+	Type ConstantC `json:"type" api:"required"`
 }
 
 type DiscriminatedUnion struct {
@@ -349,6 +349,36 @@ func init() {
 		"B": reflect.TypeOf(DiscVariantB{}),
 		"C": reflect.TypeOf(DiscVariantC{}),
 	})
+}
+
+type FooVariant struct {
+	Type  string `json:"type" api:"required"`
+	Value string `json:"value" api:"required"`
+}
+
+type BarVariant struct {
+	Type   string `json:"type" api:"required"`
+	Enable bool   `json:"enable" api:"required"`
+}
+
+type MultiDiscriminatorUnion struct {
+	OfFoo *FooVariant `json:",inline"`
+	OfBar *BarVariant `json:",inline"`
+
+	paramUnion
+}
+
+func init() {
+	apijson.RegisterDiscriminatedUnion[MultiDiscriminatorUnion]("type", map[string]reflect.Type{
+		"foo":        reflect.TypeOf(FooVariant{}),
+		"foo_v2":     reflect.TypeOf(FooVariant{}),
+		"bar":        reflect.TypeOf(BarVariant{}),
+		"bar_legacy": reflect.TypeOf(BarVariant{}),
+	})
+}
+
+func (m *MultiDiscriminatorUnion) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, m)
 }
 
 func (d *DiscriminatedUnion) UnmarshalJSON(data []byte) error {
@@ -395,6 +425,64 @@ func TestDiscriminatedUnion(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			var dst DiscriminatedUnion
+			err := json.Unmarshal([]byte(test.raw), &dst)
+			if err != nil && !test.shouldFail {
+				t.Fatalf("failed unmarshal with err: %v", err)
+			}
+			if err == nil && test.shouldFail {
+				t.Fatalf("expected unmarshal to fail but it succeeded")
+			}
+			if !reflect.DeepEqual(dst, test.target) {
+				t.Fatalf("failed equality, got %#v but expected %#v", dst, test.target)
+			}
+		})
+	}
+}
+
+func TestMultiDiscriminatorUnion(t *testing.T) {
+	tests := map[string]struct {
+		raw        string
+		target     MultiDiscriminatorUnion
+		shouldFail bool
+	}{
+		"foo_variant": {
+			raw: `{"type":"foo","value":"test"}`,
+			target: MultiDiscriminatorUnion{OfFoo: &FooVariant{
+				Type:  "foo",
+				Value: "test",
+			}},
+		},
+		"foo_v2_variant": {
+			raw: `{"type":"foo_v2","value":"test_v2"}`,
+			target: MultiDiscriminatorUnion{OfFoo: &FooVariant{
+				Type:  "foo_v2",
+				Value: "test_v2",
+			}},
+		},
+		"bar_variant": {
+			raw: `{"type":"bar","enable":true}`,
+			target: MultiDiscriminatorUnion{OfBar: &BarVariant{
+				Type:   "bar",
+				Enable: true,
+			}},
+		},
+		"bar_legacy_variant": {
+			raw: `{"type":"bar_legacy","enable":false}`,
+			target: MultiDiscriminatorUnion{OfBar: &BarVariant{
+				Type:   "bar_legacy",
+				Enable: false,
+			}},
+		},
+		"invalid_type": {
+			raw:        `{"type":"unknown","value":"test"}`,
+			target:     MultiDiscriminatorUnion{},
+			shouldFail: true,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			var dst MultiDiscriminatorUnion
 			err := json.Unmarshal([]byte(test.raw), &dst)
 			if err != nil && !test.shouldFail {
 				t.Fatalf("failed unmarshal with err: %v", err)
